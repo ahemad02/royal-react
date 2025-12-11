@@ -1,0 +1,280 @@
+@import "tailwindcss";
+
+
+
+@layer base {
+
+@font-face {
+    font-family: 'BR Hendrix';
+    src: url('/fonts/BRHendrix-Regular.eot');
+    src: url('/fonts/BRHendrix-Regular.eot?#iefix') format('embedded-opentype'),
+        url('/fonts/BRHendrix-Regular.woff2') format('woff2'),
+        url('/fonts/BRHendrix-Regular.woff') format('woff'),
+        url('/fonts/BRHendrix-Regular.ttf') format('truetype'),
+        url('/fonts/BRHendrix-Regular.svg#BRHendrix-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Founders Grotesk';
+    src: url('/fonts/FoundersGrotesk-Regular.eot');
+    src: url('/fonts/FoundersGrotesk-Regular.eot?#iefix') format('embedded-opentype'),
+        url('/fonts/FoundersGrotesk-Regular.woff2') format('woff2'),
+        url('/fonts/FoundersGrotesk-Regular.woff') format('woff'),
+        url('/fonts/FoundersGrotesk-Regular.ttf') format('truetype'),
+        url('/fonts/FoundersGrotesk-Regular.svg#FoundersGrotesk-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Founders Grotesk';
+    src: url('/fonts/FoundersGrotesk-Medium.eot');
+    src: url('/fonts/FoundersGrotesk-Medium.eot?#iefix') format('embedded-opentype'),
+        url('/fonts/FoundersGrotesk-Medium.woff2') format('woff2'),
+        url('/fonts/FoundersGrotesk-Medium.woff') format('woff'),
+        url('/fonts/FoundersGrotesk-Medium.ttf') format('truetype'),
+        url('/fonts/FoundersGrotesk-Medium.svg#FoundersGrotesk-Medium') format('svg');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Moneta Sans';
+    src: url('/fonts/MonetaSans-Bold.eot');
+    src: url('/fonts/MonetaSans-Bold.eot?#iefix') format('embedded-opentype'),
+        url('/fonts/MonetaSans-Bold.woff2') format('woff2'),
+        url('/fonts/MonetaSans-Bold.woff') format('woff'),
+        url('/fonts/MonetaSans-Bold.ttf') format('truetype'),
+        url('/fonts/MonetaSans-Bold.svg#MonetaSans-Bold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Work Sans';
+    src: url('/fonts/WorkSans-Regular.eot');
+    src: url('/fonts/WorkSans-Regular.eot?#iefix') format('embedded-opentype'),
+        url('/fonts/WorkSans-Regular.woff2') format('woff2'),
+        url('/fonts/WorkSans-Regular.woff') format('woff'),
+        url('/fonts/WorkSans-Regular.ttf') format('truetype'),
+        url('/fonts/WorkSans-Regular.svg#WorkSans-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+}
+
+.app-container {
+  max-width: 1360px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 20px;
+}
+
+
+body h1 {
+  font-family: "Moneta Sans";
+  font-weight: bold;
+  font-style: normal;
+  font-size: clamp(32px, 6vw, 45px) !important;
+  color: #ffffff !important;
+}
+
+body h2 {
+  font-family: "Moneta Sans";
+  font-weight: bold;
+  font-style: normal;
+  font-size: clamp(28px, 6vw, 35px) !important;
+  color: #ffffff !important;
+  line-height: 100% !important;
+  text-transform: uppercase;
+}
+
+body h3{
+	  font-family: "Moneta Sans";
+  font-weight: bold;
+  font-style: normal;
+  font-size: clamp(24px, 6vw, 30px) !important;
+  color: #1e1e1e !important;
+  line-height: 100% !important;
+  text-transform: capitalize;
+}
+
+
+body h4{
+	 font-family: "Moneta Sans";
+  font-weight: bold;
+  font-style: normal;
+  font-size: 20px !important;
+  color: #1e1e1e !important;
+  line-height: 100% !important;
+  text-transform: uppercase;
+}
+
+body h5 {
+  font-family: "Moneta Sans";
+  font-weight: bold;
+  font-style: normal;
+  color: #1e1e1e !important;
+  text-transform: uppercase;
+  font-size: clamp(16px, 6vw, 22px) !important;
+}
+
+body h6 {
+  font-family: "Moneta Sans";
+  font-weight: bold;
+  font-style: normal;
+  color: #ffffff !important;
+}
+
+body p,
+body {
+  font-family: "Founders Grotesk";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 20px;
+}
+
+.nav-item {
+  position: relative;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.nav-item::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: #fff;
+  transform-origin: left;            /* change to center for center growth */
+  transform: scaleX(0);
+  transition: transform 200ms ease-out 100ms; /* duration + delay */
+}
+
+.nav-item.text-black::after {
+  background: #000000;
+}
+
+/* hover or active */
+.nav-item:hover::after,
+.nav-item.active::after{
+  transform: scaleX(1);
+}
+
+.footer-link {
+  position: relative;
+  transition: 200ms ease;
+}
+
+.footer-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1.5px;
+  background: #000;  /* Black underline for footer */
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms ease;
+}
+
+.footer-link:hover::after,
+.footer-link.active::after {
+  transform: scaleX(1);
+}
+
+.dark-text{
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7), 0 0 10px rgba(0, 0, 0, 0.6)
+}
+
+.line::after{
+  content: "";
+    height: 1px;
+    width: 51px;
+    background: #1e1e1e;
+    margin-left: 10px;
+}
+
+.acoordition button.w-full.pr-10.mt-5.text-md.tracking-wide.flex.justify-start.items-center.line::after{
+  background: #fff !important;
+}
+
+.acoordition h4{
+  color: #fff !important;
+  font-size: 22px !important;
+  text-align: left;
+}
+
+p.text-gray-300.text-md.leading-relaxed.mt-2.pr-6.transition-all.duration-300 {
+    font-family: 'BR Hendrix' !important;
+}
+
+.swiper-slide-thumb-active img {
+  outline: 3px solid #43350d; /* Gold */
+  outline-offset: -2px;
+  padding:5px;
+  border-radius: 6px;
+}
+
+.behind-image{
+  background-color: #333333;
+}
+
+.highlight-text{
+text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.l-height{
+  line-height: 50px !important;
+}
+
+.faq img.w-4 {
+    height: 30px;
+    width: 30px;
+    padding: 6px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+}
+
+.contact-page .md\:h-\[500px\],.career-page .md\:h-\[500px\] {
+    @media (width >= 48rem) {
+        height: 300px !important;
+    }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0px 1000px #1e1e1e inset !important; /* Same as your bg */
+}
+
+
+@media(max-width:1024px){
+  .nav-item {
+    color:#1e1e1e !important;
+  }
+
+  .nav-item.mobile::after{
+    background: #1e1e1e !important;
+  }
+
+}

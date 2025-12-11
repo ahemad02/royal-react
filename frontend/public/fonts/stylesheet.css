@@ -1,0 +1,65 @@
+@font-face {
+    font-family: 'BR Hendrix';
+    src: url('BRHendrix-Regular.eot');
+    src: url('BRHendrix-Regular.eot?#iefix') format('embedded-opentype'),
+        url('BRHendrix-Regular.woff2') format('woff2'),
+        url('BRHendrix-Regular.woff') format('woff'),
+        url('BRHendrix-Regular.ttf') format('truetype'),
+        url('BRHendrix-Regular.svg#BRHendrix-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Founders Grotesk';
+    src: url('FoundersGrotesk-Regular.eot');
+    src: url('FoundersGrotesk-Regular.eot?#iefix') format('embedded-opentype'),
+        url('FoundersGrotesk-Regular.woff2') format('woff2'),
+        url('FoundersGrotesk-Regular.woff') format('woff'),
+        url('FoundersGrotesk-Regular.ttf') format('truetype'),
+        url('FoundersGrotesk-Regular.svg#FoundersGrotesk-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Founders Grotesk';
+    src: url('FoundersGrotesk-Medium.eot');
+    src: url('FoundersGrotesk-Medium.eot?#iefix') format('embedded-opentype'),
+        url('FoundersGrotesk-Medium.woff2') format('woff2'),
+        url('FoundersGrotesk-Medium.woff') format('woff'),
+        url('FoundersGrotesk-Medium.ttf') format('truetype'),
+        url('FoundersGrotesk-Medium.svg#FoundersGrotesk-Medium') format('svg');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Moneta Sans';
+    src: url('MonetaSans-Bold.eot');
+    src: url('MonetaSans-Bold.eot?#iefix') format('embedded-opentype'),
+        url('MonetaSans-Bold.woff2') format('woff2'),
+        url('MonetaSans-Bold.woff') format('woff'),
+        url('MonetaSans-Bold.ttf') format('truetype'),
+        url('MonetaSans-Bold.svg#MonetaSans-Bold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Work Sans';
+    src: url('WorkSans-Regular.eot');
+    src: url('WorkSans-Regular.eot?#iefix') format('embedded-opentype'),
+        url('WorkSans-Regular.woff2') format('woff2'),
+        url('WorkSans-Regular.woff') format('woff'),
+        url('WorkSans-Regular.ttf') format('truetype'),
+        url('WorkSans-Regular.svg#WorkSans-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
