@@ -87,6 +87,14 @@ body h1 {
   color: #ffffff !important;
 }
 
+.detail-right h1,.detail-right table td {
+  font-family: "Moneta Sans";
+}
+
+.detail-right table td{
+  font-size: 20px !important;
+}
+
 body h2 {
   font-family: "Moneta Sans";
   font-weight: bold;
@@ -265,6 +273,21 @@ select:-webkit-autofill:focus {
   -webkit-text-fill-color: #ffffff !important;
   transition: background-color 9999s ease-in-out 0s;
   box-shadow: 0 0 0px 1000px #1e1e1e inset !important; /* Same as your bg */
+}
+
+
+.detail-page .swiper-button-prev,
+.detail-page .swiper-button-next {
+  color: #000 !important;
+  font-weight: bold;
+  height: 30px !important;
+  width: 30px !important;
+  margin-top: -10px !important;
+  
+}
+
+.thumb.active-thumb img {
+  border: 2px solid #000 !important;
 }
 
 
