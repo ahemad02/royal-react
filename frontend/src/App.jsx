@@ -9,6 +9,16 @@ import Career from './pages/Career'
 import { Toaster } from "react-hot-toast";
 import Product from './pages/Product'
 import ProductDetails from './pages/ProductDetails'
+import ProtectedAdminRoute from './admin/routes/ProtectedAdminRoute'
+import AdminLayout from './admin/layout/AdminLayout'
+import Dashboard from './admin/pages/Dashboard'
+import Products from './admin/pages/Products'
+import CreateProduct from './admin/pages/CreateProduct'
+import EditProduct from './admin/pages/EditProduct'
+import Sizes from './admin/pages/Sizes'
+import Surfaces from './admin/pages/Surfaces'
+import Categories from './admin/pages/Categories'
+import Login from './admin/pages/Login'
 
 const App = () => {
   return (
@@ -24,6 +34,25 @@ const App = () => {
         <Route path="/product" element={<Product />} />
         <Route path="/product/:id" element={<ProductDetails />} />
       </Routes>
+        <Routes>
+            <Route path="/admin/login" element={<Login />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminLayout />
+                </ProtectedAdminRoute>
+              }
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="products" element={<Products />} />
+              <Route path="products/create" element={<CreateProduct />} />
+              <Route path="products/edit/:id" element={<EditProduct />} />
+              <Route path="sizes" element={<Sizes />} />
+              <Route path="surfaces" element={<Surfaces />} />
+              <Route path="categories" element={<Categories />} />
+            </Route>
+          </Routes>
       <Footer />
     </div>
   )
