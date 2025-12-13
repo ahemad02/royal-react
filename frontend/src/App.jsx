@@ -19,12 +19,15 @@ import Sizes from './admin/pages/Sizes'
 import Surfaces from './admin/pages/Surfaces'
 import Categories from './admin/pages/Categories'
 import Login from './admin/pages/Login'
+import { useLocation } from "react-router-dom";
 
 const App = () => {
+   const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
   return (
      <div className="text-default min-h-screen bg-white">
       <Toaster />
-      <Navbar />
+      {!isAdmin && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -53,7 +56,7 @@ const App = () => {
               <Route path="categories" element={<Categories />} />
             </Route>
           </Routes>
-      <Footer />
+      {!isAdmin && <Footer />}
     </div>
   )
 }

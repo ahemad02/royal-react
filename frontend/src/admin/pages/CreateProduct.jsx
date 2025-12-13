@@ -13,7 +13,7 @@ const AddProduct = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-xl font-semibold mb-4">Add Product</h2>
+      <h2 className="text-xl font-semibold mb-4 text-black!">Add Product</h2>
       <ProductForm onSubmit={submitHandler} />
     </div>
   );
