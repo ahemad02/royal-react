@@ -13,6 +13,17 @@ export const createProduct = async (req, res) => {
       view360Link,
     } = req.body;
 
+    // 1️⃣ Check duplicate title
+    const existingProduct = await Product.findOne({
+      title: title.trim(),
+    });
+
+    if (existingProduct) {
+      return res.status(409).json({
+        message: "Product with this title already exists",
+      });
+    }
+
     // Feature image
     const featureImage = req.files?.featureImage
       ? await uploadToCloudinary(
@@ -33,6 +44,29 @@ export const createProduct = async (req, res) => {
       }
     }
 
+    // 2️⃣ Validation
+    if (
+      !title ||
+      !sizes ||
+      !surfaces ||
+      !category ||
+      !faces ||
+      !view360Link
+    ) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (!featureImage) {
+      return res.status(400).json({ message: "Feature image is required" });
+    }
+
+    if (gallery.length === 0) {
+      return res.status(400).json({
+        message: "At least one gallery image is required",
+      });
+    }
+
+    // 3️⃣ Create product
     const product = await Product.create({
       title,
       featureImage,
@@ -50,36 +84,50 @@ export const createProduct = async (req, res) => {
   }
 };
 
+
 /* ================= GET ALL PRODUCTS ================= */
 export const getProducts = async (req, res) => {
   try {
-    const { size, surface, category } = req.query;
+    const {
+      page = 1,
+      limit = 12,
+      size,
+      surface,
+      category,
+    } = req.query;
 
-    const filter = {};
+    const filter = { isActive: true };
 
-    if (size) {
-      filter.sizes = { $in: [size] };
-    }
+if (size) filter.sizes = { $in: [size] };
+if (surface) filter.surfaces = { $in: [surface] };
+if (category) filter.category = category;
 
-    if (surface) {
-      filter.surfaces = { $in: [surface] };
-    }
+    const skip = (page - 1) * limit;
 
-    if (category) {
-      filter.category = category;
-    }
+    const [products, total] = await Promise.all([
+      Product.find(filter)
+        .populate("sizes", "name")
+        .populate("surfaces", "name")
+        .populate("category", "name")
+        .sort({ title: 1 })
+        .skip(skip)
+        .limit(Number(limit)),
 
-    const products = await Product.find(filter)
-      .populate("sizes", "name")
-      .populate("surfaces", "name")
-      .populate("category", "name")
-      .sort({ createdAt: -1 });
+      Product.countDocuments(filter),
+    ]);
 
-    res.json(products);
+    res.json({
+      products,
+      total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: Number(page),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 /* ================= GET SINGLE PRODUCT ================= */
 export const getProductById = async (req, res) => {

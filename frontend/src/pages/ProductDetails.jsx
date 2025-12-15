@@ -1,57 +1,64 @@
-import React, { useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
-
-const allProducts = [
-  {
-    id: 1,
-    title: "ALTO GREY",
-    banner: "/images/Alto-Grey.jpg",
-    gallery: [
-      "/images/ALTO-GREY-T1-1.jpg",
-      "/images/ALTO-GREY-T2.jpg",
-      "/images/ALTO-GREY-T3.jpg",
-      "/images/ALTO-GREY-T5.jpg",
-      "/images/ALTO-GREY-T6.jpg",
-      "/images/ALTO-GREY-T7.jpg",
-      "/images/ALTO-GREY-T8.jpg",
-      "/images/ALTO-GREY-T11.jpg",
-    ],
-    size: "12x24",
-    surface: "Glossy, Matt",
-    faces: "FACE - 08",
-    category: "Porcelain Tiles",
-  },
-];
+import { getProductById } from "../admin/api/productApi";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const swiperRef = useRef(null);
-  const product = allProducts.find((p) => p.id === Number(id));
 
-  const [mainImage, setMainImage] = useState(product?.gallery[0]);
+  const [product, setProduct] = useState(null);
+  const [mainImage, setMainImage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  if (!product) return <h2 className="text-center mt-10">Product not found</h2>;
+  // FETCH PRODUCT
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await getProductById(id);
+
+        setProduct(res.data);
+        setMainImage(res.data.gallery?.[0] || res.data.featureImage);
+      } catch (err) {
+        console.error("Failed to fetch product", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="h-14 w-14 rounded-full border-4 border-black/30 border-t-black animate-spin" />
+      </div>
+    );
+  }
+
+  if (!product) {
+    return <h2 className="text-center mt-10">Product not found</h2>;
+  }
 
   return (
     <div className="w-full detail-page">
       {/* BANNER */}
       <div className="relative w-full h-[350px] overflow-hidden">
-        {/* Banner Image */}
         <img
-          src={product.banner}
+          src={product.featureImage}
           className="w-full h-full object-cover"
           alt={product.title}
         />
 
-        {/* Title Overlay */}
         <div className="absolute bottom-0 left-0 w-full bg-linear-to-t from-black/70 to-transparent py-6 flex justify-center">
-          <h1 className="text-white text-3xl font-semibold tracking-wide bg-black/12 rounded-md">
+          <h1 className="text-white text-3xl font-semibold tracking-wide">
             {product.title}
           </h1>
         </div>
@@ -59,23 +66,40 @@ const ProductDetails = () => {
 
       {/* CONTAINER */}
       <div className="max-w-[1300px] mx-auto px-6 py-12">
-        {/* Back */}
+        {/* BACK BUTTON */}
         <button
-          onClick={() => navigate(-1)}
-          className="px-6 py-2 border border-gray-400 rounded flex items-center gap-2 mb-10"
+          onClick={() => navigate(`/product${location.search}`)}
+          className="px-6 py-2 border border-gray-400 rounded flex items-center gap-2 mb-10 hover:bg-[#1e1e1e] hover:text-white cursor-pointer"
         >
           <span className="text-xl">←</span> GO BACK
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
-          {/* LEFT SIDE IMAGES */}
+          {/* LEFT IMAGES */}
           <div>
-            {/* Main Image */}
-            <div className="border p-2">
-              <img src={mainImage} className="w-full h-[380px] object-cover" />
+            <div
+              className="border p-2 overflow-hidden"
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                e.currentTarget.querySelector(
+                  "img"
+                ).style.transformOrigin = `${x}% ${y}%`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.querySelector("img").style.transformOrigin =
+                  "center";
+              }}
+            >
+              <img
+                src={mainImage}
+                className="w-full h-[330px] object-contain transition-transform duration-300 ease-out hover:scale-150"
+                alt={product.title}
+              />
             </div>
 
-            {/* Swiper Thumbnail Slider */}
+            {/* THUMBNAILS */}
             <Swiper
               modules={[Navigation]}
               navigation
@@ -92,8 +116,8 @@ const ProductDetails = () => {
               {product.gallery.map((img, index) => (
                 <SwiperSlide key={index}>
                   <div
-                    className={`thumb p-1 cursor-pointer ${
-                      mainImage === img ? "active-thumb" : ""
+                    className={`p-1 cursor-pointer border ${
+                      mainImage === img ? "border-black" : "border-transparent"
                     }`}
                     onClick={() => {
                       setMainImage(img);
@@ -107,27 +131,31 @@ const ProductDetails = () => {
             </Swiper>
           </div>
 
-          {/* RIGHT SIDE DETAILS */}
-          <div class="detail-right">
-            <h1 className="text-4xl! font-semibold tracking-wide mb-6 text-black!">
+          {/* RIGHT DETAILS */}
+          <div>
+            <h2 className="text-4xl font-semibold mb-6 text-black!">
               {product.title}
-            </h1>
+            </h2>
 
             <table className="w-full text-lg">
               <tbody>
                 <tr className="border-b">
                   <td className="py-3 font-medium w-48">PRODUCT TYPE</td>
-                  <td className="py-3">{product.category}</td>
+                  <td className="py-3">{product.category?.name}</td>
                 </tr>
 
                 <tr className="border-b">
                   <td className="py-3 font-medium">SIZE</td>
-                  <td className="py-3">{product.size}</td>
+                  <td className="py-3">
+                    {product.sizes.map((s) => s.name).join(", ")}
+                  </td>
                 </tr>
 
                 <tr className="border-b">
                   <td className="py-3 font-medium">SURFACES</td>
-                  <td className="py-3">{product.surface}</td>
+                  <td className="py-3">
+                    {product.surfaces.map((s) => s.name).join(", ")}
+                  </td>
                 </tr>
 
                 <tr className="border-b">
@@ -135,14 +163,21 @@ const ProductDetails = () => {
                   <td className="py-3">{product.faces}</td>
                 </tr>
 
-                <tr>
-                  <td className="py-3 font-medium">360° VIEW</td>
-                  <td className="py-3">
-                    <a href="#" className="text-blue-600 underline">
-                      View Product
-                    </a>
-                  </td>
-                </tr>
+                {product.view360Link && (
+                  <tr>
+                    <td className="py-3 font-medium">360° VIEW</td>
+                    <td className="py-3">
+                      <a
+                        href={product.view360Link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 underline-offset-4 underline"
+                      >
+                        View Product
+                      </a>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

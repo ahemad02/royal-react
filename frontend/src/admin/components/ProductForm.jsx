@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
+import toast from "react-hot-toast";
 import { getSizes, getSurfaces, getCategories } from "../api/metaApi";
+import { useNavigate } from "react-router-dom";
 
 const ProductForm = ({ onSubmit, initialData = {} }) => {
   const [title, setTitle] = useState(initialData.title || "");
@@ -21,6 +23,9 @@ const ProductForm = ({ onSubmit, initialData = {} }) => {
   const [sizeOptions, setSizeOptions] = useState([]);
   const [surfaceOptions, setSurfaceOptions] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   /* FETCH DROPDOWN DATA */
   useEffect(() => {
@@ -51,26 +56,46 @@ const ProductForm = ({ onSubmit, initialData = {} }) => {
     }
   }, []);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("faces", faces);
-    formData.append("view360Link", view360Link);
-    formData.append("category", category?.value);
-    formData.append("isActive", isActive);
-
-    sizes.forEach((s) => formData.append("sizes", s.value));
-    surfaces.forEach((s) => formData.append("surfaces", s.value));
-
-    if (featureImage) {
-      formData.append("featureImage", featureImage);
+    if (!category) {
+      toast.error("Please select category");
+      return;
     }
 
-    gallery.forEach((img) => formData.append("gallery", img));
+    setLoading(true);
 
-    onSubmit(formData);
+    try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("faces", faces);
+      formData.append("view360Link", view360Link);
+      formData.append("category", category.value);
+      formData.append("isActive", isActive);
+
+      sizes.forEach((s) => formData.append("sizes", s.value));
+      surfaces.forEach((s) => formData.append("surfaces", s.value));
+
+      if (featureImage) {
+        formData.append("featureImage", featureImage);
+      }
+
+      gallery.forEach((img) => formData.append("gallery", img));
+
+      await onSubmit(formData);
+
+      toast.success("Product saved successfully");
+
+      setTimeout(() => {
+        navigate("/admin/products");
+      }, 500);
+      
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -214,8 +239,14 @@ const ProductForm = ({ onSubmit, initialData = {} }) => {
         Active
       </label>
 
-      <button className="bg-black text-white px-5 py-2 rounded">
-        Save Product
+      <button
+        type="submit"
+        disabled={loading}
+        className={`px-5 py-2 rounded text-white transition ${
+          loading ? "bg-gray-400 cursor-not-allowed" : "bg-black"
+        }`}
+      >
+        {loading ? "Saving..." : "Save Product"}
       </button>
     </form>
   );

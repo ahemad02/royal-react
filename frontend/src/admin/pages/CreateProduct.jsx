@@ -8,7 +8,6 @@ const AddProduct = () => {
 
   const submitHandler = async (formData) => {
     await createProduct(formData);
-    navigate("/admin/products");
   };
 
   return (

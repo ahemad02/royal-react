@@ -1,7 +1,7 @@
 import axios from "./axios";
 
 /* CRUD */
-export const getProducts = (params = {}) =>
+export const getProducts = (params) =>
   axios.get("/products", { params });
 
 export const getProductById = (id) =>

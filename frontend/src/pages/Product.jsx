@@ -1,74 +1,149 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Banner from "../components/Banner";
-import { Link } from "react-router-dom";
-
-const allProducts = [
-  {
-    id: 1,
-    title: "ALTO GREY",
-    image: "/images/Alto-Grey.jpg",
-    size: "24x48",
-    surface: "Matt",
-    category: "Porcelain Tiles",
-  },
-  {
-    id: 2,
-    title: "CAFE END",
-    image: "/images/cafe-end.jpg",
-    size: "24x48",
-    surface: "Glossy",
-    category: "Porcelain XXL Tiles",
-  },
-  {
-    id: 3,
-    title: "CALACATA GOLD",
-    image: "/images/CULCUTTA-GOLD.jpg",
-    size: "48x72",
-    surface: "High Glossy",
-    category: "Porcelain Tiles",
-  },
-  {
-    id: 4,
-    title: "CALACATTA AVERIO",
-    image: "/images/CALACATTA-AVERIO.jpg",
-    size: "12x24",
-    surface: "Super White",
-    category: "Woode Plank Porcelain",
-  },
-];
-
-const sizeOptions = ["8x48", "12x24", "24x48", "48x72"];
-const surfaceOptions = [
-  "Glossy",
-  "High Glossy",
-  "Super White",
-  "Matt",
-  "Carving Matt",
-  "Wooden",
-  "Rusty Matt",
-];
-const categoryOptions = [
-  "Porcelain Tiles",
-  "Porcelain XXL Tiles",
-  "Woode Plank Porcelain",
-];
+import { Link, useSearchParams } from "react-router-dom";
+import { getProducts } from "../admin/api/productApi";
+import { getCategories, getSizes, getSurfaces } from "../admin/api/metaApi";
 
 const Product = () => {
-  const [selectedSize, setSelectedSize] = useState("");
-  const [selectedSurface, setSelectedSurface] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Helps highlight active tab
-  const activeFilter =
-    selectedSize || selectedSurface || selectedCategory ? "FILTERED" : "ALL";
+  const [sizes, setSizes] = useState([]);
+  const [surfaces, setSurfaces] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  const filteredProducts = allProducts.filter((item) => {
-    return (
-      (selectedSize ? item.size === selectedSize : true) &&
-      (selectedSurface ? item.surface === selectedSurface : true) &&
-      (selectedCategory ? item.category === selectedCategory : true)
-    );
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Initialize from URL
+  const initialSizeName = searchParams.get("size") || "";
+  const initialSurfaceName = searchParams.get("surface") || "";
+  const initialCategoryName = searchParams.get("category") || "";
+  const initialPage = Number(searchParams.get("page")) || 1;
+
+  const [selectedSize, setSelectedSize] = useState(initialSizeName);
+  const [selectedSurface, setSelectedSurface] = useState(initialSurfaceName);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategoryName);
+  const [page, setPage] = useState(initialPage);
+
+  const [totalPages, setTotalPages] = useState(1);
+  const [animateIn, setAnimateIn] = useState(false);
+
+
+  // Fetch meta data
+  useEffect(() => {
+    const fetchMeta = async () => {
+      try {
+        const [sizeRes, surfaceRes, categoryRes] = await Promise.all([
+          getSizes(),
+          getSurfaces(),
+          getCategories(),
+        ]);
+        setSizes(sizeRes.data);
+        setSurfaces(surfaceRes.data);
+        setCategories(categoryRes.data);
+      } catch (error) {
+        console.error("Failed to load filters", error);
+      }
+    };
+    fetchMeta();
+  }, []);
+
+  // After meta data loads, convert URL names to IDs
+  useEffect(() => {
+    if (sizes.length && surfaces.length && categories.length) {
+      const sizeObj = sizes.find((s) => s.name === selectedSize);
+      const surfaceObj = surfaces.find((s) => s.name === selectedSurface);
+      const categoryObj = categories.find((c) => c.name === selectedCategory);
+
+      if (sizeObj) setSelectedSize(sizeObj._id);
+      if (surfaceObj) setSelectedSurface(surfaceObj._id);
+      if (categoryObj) setSelectedCategory(categoryObj._id);
+    }
+  }, [sizes, surfaces, categories]);
+
+  // Fetch products based on filters & page
+useEffect(() => {
+  const fetchProducts = async () => {
+    setLoading(true);
+    setAnimateIn(false);
+
+    try {
+      const res = await getProducts({
+        page,
+        limit: 12,
+        size: selectedSize || undefined,
+        surface: selectedSurface || undefined,
+        category: selectedCategory || undefined,
+      });
+
+      setProducts(res.data.products.filter((p) => p.isActive));
+      setTotalPages(res.data.totalPages);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+      setTimeout(() => setAnimateIn(true), 50); // small delay = smoother
+    }
+  };
+
+  fetchProducts();
+}, [page, selectedSize, selectedSurface, selectedCategory]);
+
+
+  // Sync state → URL
+  useEffect(() => {
+    const params = {};
+
+    if (selectedSize) {
+      const sizeObj = sizes.find((s) => s._id === selectedSize);
+      if (sizeObj) params.size = sizeObj.name;
+    }
+
+    if (selectedSurface) {
+      const surfaceObj = surfaces.find((s) => s._id === selectedSurface);
+      if (surfaceObj) params.surface = surfaceObj.name;
+    }
+
+    if (selectedCategory) {
+      const categoryObj = categories.find((c) => c._id === selectedCategory);
+      if (categoryObj) params.category = categoryObj.name;
+    }
+
+    if (page && page > 1) params.page = page;
+
+    setSearchParams(params);
+  }, [
+    page,
+    selectedSize,
+    selectedSurface,
+    selectedCategory,
+    sizes,
+    surfaces,
+    categories,
+  ]);
+
+  // Options for dropdowns
+  const sizeOptions = useMemo(
+    () => sizes.map((s) => ({ id: s._id, name: s.name })),
+    [sizes]
+  );
+  const surfaceOptions = useMemo(
+    () => surfaces.map((s) => ({ id: s._id, name: s.name })),
+    [surfaces]
+  );
+  const categoryOptions = useMemo(
+    () => categories.map((c) => ({ id: c._id, name: c.name })),
+    [categories]
+  );
+
+  if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#1e1e1e]">
+      <div className="h-16 w-16 rounded-full border-4 border-white/30 border-t-white animate-spin" />
+    </div>
+  );
+}
+
 
   return (
     <div>
@@ -85,136 +160,150 @@ const Product = () => {
         <h2 className="text-center text-3xl font-bold mb-8 tracking-wide">
           OUR PRODUCTS
         </h2>
+
         {/* FILTER TABS */}
         <div className="flex justify-center gap-4 mb-12 flex-wrap">
-          {/* ALL */}
           <button
             onClick={() => {
+              setPage(1);
               setSelectedSize("");
               setSelectedSurface("");
               setSelectedCategory("");
             }}
-            className={`
-              px-8 py-3 rounded-lg border transition-all duration-300
-              ${
-                activeFilter === "ALL"
-                  ? "bg-white text-black scale-105 shadow-lg"
-                  : "border-white text-white hover:bg-white/20 hover:scale-105"
-              }
-            `}
+            className={`px-8 py-3 rounded-lg border ${
+              !selectedSize && !selectedSurface && !selectedCategory
+                ? "bg-white text-black"
+                : "bg-transparent text-white"
+            }`}
           >
             ALL
           </button>
 
-          {/* SIZE DROPDOWN (HOVER) */}
-          <div className="relative group">
-            <button
-              className={`px-8 py-3 rounded-lg border transition-all duration-300
-              ${
-                selectedSize
-                  ? "bg-white text-black scale-105 shadow-lg"
-                  : "border-white text-white hover:bg-white/20 hover:scale-105"
-              }
-              `}
-            >
-              {selectedSize || "SIZES"} ▼
-            </button>
+          <FilterDropdown
+            label="SIZES"
+            value={sizes.find((s) => s._id === selectedSize)?.name}
+            options={sizeOptions}
+            onSelect={(opt) => {
+              setPage(1);
+              setSelectedSize(opt.id);
+            }}
+          />
 
-            {/* Hover Dropdown */}
-            <div
-              className="absolute left-0 mt-2 bg-[#1e1e1e] text-white rounded shadow-lg w-44 opacity-0 invisible
-                         group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20"
-            >
-              {sizeOptions.map((sz) => (
-                <div
-                  key={sz}
-                  className="px-4 py-2 hover:bg-[#3a3a3a] cursor-pointer text-lg"
-                  onClick={() => setSelectedSize(sz)}
-                >
-                  {sz}
-                </div>
-              ))}
-            </div>
-          </div>
+          <FilterDropdown
+            label="SURFACES"
+            value={surfaces.find((s) => s._id === selectedSurface)?.name}
+            options={surfaceOptions}
+            onSelect={(opt) => {
+              setPage(1);
+              setSelectedSurface(opt.id);
+            }}
+          />
 
-          {/* SURFACE DROPDOWN */}
-          <div className="relative group">
-            <button
-              className={`px-8 py-3 rounded-lg border transition-all duration-300 
-              ${
-                selectedSurface
-                  ? "bg-white text-black scale-105 shadow-lg"
-                  : "border-white text-white hover:bg-white/20 hover:scale-105"
-              }
-              `}
-            >
-              {selectedSurface || "SURFACES"} ▼
-            </button>
-
-            <div
-              className="absolute left-0 mt-2 bg-[#1e1e1e] text-white rounded shadow-lg w-44 opacity-0 invisible
-                         group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20"
-            >
-              {surfaceOptions.map((sf) => (
-                <div
-                  key={sf}
-                  className="px-4 py-2 hover:bg-[#3a3a3a] cursor-pointer text-lg"
-                  onClick={() => setSelectedSurface(sf)}
-                >
-                  {sf}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* CATEGORY DROPDOWN */}
-          <div className="relative group">
-            <button
-              className={`px-8 py-3 rounded-lg border transition-all duration-300
-              ${
-                selectedCategory
-                  ? "bg-white text-black scale-105 shadow-lg"
-                  : "border-white text-white hover:bg-white/20 hover:scale-105"
-              }
-              `}
-            >
-              {selectedCategory || "PRODUCT"} ▼
-            </button>
-
-            <div
-              className="absolute left-0 mt-2 bg-[#1e1e1e] text-white rounded shadow-lg w-44 opacity-0 invisible
-                         group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20"
-            >
-              {categoryOptions.map((cat) => (
-                <div
-                  key={cat}
-                  className="px-4 py-2 hover:bg-[#3a3a3a] cursor-pointer text-lg"
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </div>
-              ))}
-            </div>
-          </div>
+          <FilterDropdown
+            label="PRODUCT"
+            value={categories.find((c) => c._id === selectedCategory)?.name}
+            options={categoryOptions}
+            onSelect={(opt) => {
+              setPage(1);
+              setSelectedCategory(opt.id);
+            }}
+          />
         </div>
+
         {/* PRODUCT GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 app-container">
-          {filteredProducts.map((product) => (
-            <Link to={`/product/${product.id}`} key={product.id}>
-              <div className="text-center group cursor-pointer">
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="rounded-lg shadow-lg aspect-[0.85] object-cover transition-all duration-300 group-hover:scale-105"
-                />
-                <h6 className="mt-3 text-lg text-left">{product.title}</h6>
-              </div>
-            </Link>
-          ))}
+     {products.map((product, index) => (
+  <Link
+    to={`/product/${product._id}?${searchParams.toString()}`}
+    key={product._id}
+  >
+    <div
+      className={`text-center group cursor-pointer transition-all duration-500 ease-out
+        ${animateIn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+      `}
+      style={{ transitionDelay: `${index * 60}ms` }} // stagger effect
+    >
+      <img
+        src={product.featureImage}
+        alt={product.title}
+        className="rounded-lg shadow-lg aspect-[0.85] object-cover transition-all duration-300 group-hover:scale-105"
+      />
+      <h6 className="mt-3 text-lg text-left">{product.title}</h6>
+    </div>
+  </Link>
+))}
+
         </div>
+
+        {/* PAGINATION */}
+        {totalPages > 1 && (
+          <div className="flex justify-center gap-3 mt-12">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="px-4 py-2 border rounded disabled:opacity-40"
+            >
+              Prev
+            </button>
+
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`px-4 py-2 border rounded ${
+                  page === i + 1 ? "bg-white text-black" : ""
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="px-4 py-2 border rounded disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        {products.length === 0 && (
+          <p className="text-center mt-10 text-gray-400">No products found</p>
+        )}
       </div>
     </div>
   );
 };
 
 export default Product;
+
+// REUSABLE DROPDOWN
+const FilterDropdown = ({ label, value, options, onSelect }) => {
+  const isActive = !!value; // Active if a value is selected
+  return (
+    <div className="relative group">
+      <button
+        className={`px-8 py-3 rounded-lg border ${
+          isActive ? "bg-white text-black" : "bg-transparent text-white"
+        }`}
+      >
+        {value || label} ▼
+      </button>
+
+      <div className="absolute left-0 mt-0.4 bg-[#1e1e1e] rounded shadow-lg w-44 opacity-0 invisible group-hover:opacity-100 group-hover:visible z-20">
+        {options.map((opt) => (
+          <div
+            key={opt.id}
+            className={`px-5 py-3 cursor-pointer hover:bg-[#3a3a3a] ${
+              value === opt.name ? "bg-white text-black" : ""
+            }`}
+            onClick={() => onSelect(opt)}
+          >
+            {opt.name}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};

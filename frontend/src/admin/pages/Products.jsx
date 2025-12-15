@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getProducts, deleteProduct } from "../api/productApi";
 
+
 const Products = () => {
   const [products, setProducts] = useState([]);
 
   const fetchProducts = async () => {
     const res = await getProducts();
     setProducts(res.data);
+    console.log(res.data);
   };
 
   const handleDelete = async (id) => {

@@ -17,7 +17,7 @@ router.post(
   protectAdmin,
   upload.fields([
     { name: "featureImage", maxCount: 1 },
-    { name: "gallery", maxCount: 10 },
+    { name: "gallery", maxCount: 20 },
   ]),
   createProduct
 );
