@@ -1,5 +1,7 @@
 import Product from "../models/Product.js";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
+import mongoose from "mongoose";
+
 
 /* ================= CREATE PRODUCT ================= */
 export const createProduct = async (req, res) => {
@@ -209,3 +211,33 @@ export const deleteProduct = async (req, res) => {
   res.json({ message: "Product deleted" });
 };
 
+/* ================= GET RELATED PRODUCTS ================= */
+export const getRelatedProducts = async (req, res) => {
+  try {
+    const { category, exclude, limit = 4 } = req.query;
+
+    if (!category) {
+      return res.status(400).json({ message: "Category is required" });
+    }
+
+    const query = {
+      category,
+      isActive: true,
+    };
+
+    // ✅ SAFE exclusion
+    if (exclude && mongoose.Types.ObjectId.isValid(exclude)) {
+      query._id = { $ne: new mongoose.Types.ObjectId(exclude) };
+    }
+
+    const relatedProducts = await Product.find(query)
+      .populate("category", "name")
+      .select("title featureImage category")
+      .limit(Number(limit));
+
+    res.json(relatedProducts);
+  } catch (error) {
+    console.error("Related products error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};

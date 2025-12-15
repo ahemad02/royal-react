@@ -10,6 +10,7 @@ import surfaceRoutes from "./routes/surfaceRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import adminRoutes from "./routes/adminAuthRoutes.js";
 import adminDashboardRoutes from "./routes/adminDashboardRoutes.js";
+import catalogueRoutes from "./routes/catalogueRoutes.js";
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api/sizes",sizesRoutes);
 app.use("/api/surfaces",surfaceRoutes);
 app.use("/api/categories",categoryRoutes);
 app.use("/api/admin",adminRoutes);
+app.use("/api/catalogue",catalogueRoutes);
 app.use("/api/admin/dashboard",adminDashboardRoutes);
 
 

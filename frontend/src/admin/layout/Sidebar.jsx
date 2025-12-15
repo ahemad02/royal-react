@@ -17,6 +17,18 @@ const Sidebar = () => {
         <NavLink to="/admin/products" className={linkClass}>
           Products
         </NavLink>
+        <NavLink to="/admin/catalogues" className={linkClass}>
+          Catalogues
+        </NavLink>
+
+        <NavLink to="/admin/catalogue-sizes" className={linkClass}>
+          Catalogue Sizes
+        </NavLink>
+
+        <NavLink to="/admin/catalogue-surfaces" className={linkClass}>
+          Catalogue Surfaces
+        </NavLink>
+
         <NavLink to="/admin/sizes" className={linkClass}>
           Sizes
         </NavLink>

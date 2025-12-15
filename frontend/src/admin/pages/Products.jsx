@@ -8,7 +8,7 @@ const Products = () => {
 
   const fetchProducts = async () => {
     const res = await getProducts();
-    setProducts(res.data);
+    setProducts(res.data.products);
     console.log(res.data);
   };
 

@@ -19,3 +19,10 @@ export const updateProduct = (id, data) =>
 
 export const deleteProduct = (id) =>
   axios.delete(`/products/${id}`);
+
+
+export const getRelatedProducts = (categoryId, excludeId, limit = 4) => {
+  return axios.get(
+    `/products/related?category=${categoryId}&exclude=${excludeId}&limit=${limit}`
+  );
+};

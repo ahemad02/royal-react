@@ -20,6 +20,11 @@ import Surfaces from './admin/pages/Surfaces'
 import Categories from './admin/pages/Categories'
 import Login from './admin/pages/Login'
 import { useLocation } from "react-router-dom";
+import Catalogue from './pages/catalogue'
+import CatalogueList from './admin/pages/CatalogueList'
+import CatalogueForm from './admin/pages/CatalogueForm'
+import CatalogueSizes from './admin/pages/CatalogueSizes'
+import CatalogueSurfaces from './admin/pages/CatalogueSurfaces'
 
 const App = () => {
    const location = useLocation();
@@ -35,6 +40,7 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/career" element={<Career />} />
         <Route path="/product" element={<Product />} />
+        <Route path="/catalogue" element={<Catalogue />} />
         <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/admin/login" element={<Login />} />
             <Route
@@ -47,6 +53,13 @@ const App = () => {
             >
               <Route index element={<Dashboard />} />
               <Route path="products" element={<Products />} />
+              <Route path="catalogues" element={<CatalogueList />} />
+  <Route path="catalogues/new" element={<CatalogueForm />} />
+  <Route path="catalogues/edit/:id" element={<CatalogueForm />} />
+
+  {/* CATALOGUE META */}
+  <Route path="catalogue-sizes" element={<CatalogueSizes />} />
+  <Route path="catalogue-surfaces" element={<CatalogueSurfaces />} />
               <Route path="products/create" element={<CreateProduct />} />
               <Route path="products/edit/:id" element={<EditProduct />} />
               <Route path="sizes" element={<Sizes />} />

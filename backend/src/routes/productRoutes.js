@@ -5,13 +5,15 @@ import {
   getProducts,
   getProductById,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getRelatedProducts
 } from "../controllers/productController.js";
 import { protectAdmin } from "../middleware/authMiddleware.js";
 
 
 const router = express.Router();
 
+router.get("/related", getRelatedProducts);
 router.post(
   "/",
   protectAdmin,
@@ -34,6 +36,7 @@ router.put(
 );
 
 router.delete("/:id", protectAdmin, deleteProduct);
+
 
 
 

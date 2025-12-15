@@ -5,7 +5,7 @@ import { Navigation } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
-import { getProductById } from "../admin/api/productApi";
+import { getProductById, getRelatedProducts } from "../admin/api/productApi";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -16,6 +16,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [mainImage, setMainImage] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   // FETCH PRODUCT
   useEffect(() => {
@@ -34,6 +36,33 @@ const ProductDetails = () => {
 
     fetchProduct();
   }, [id]);
+
+  
+  useEffect(() => {
+    if (!product?.category?._id) return;
+
+    const fetchRelatedProducts = async () => {
+      try {
+        const res = await getRelatedProducts(
+          product.category._id,
+          product._id,
+          4
+        );
+        setRelatedProducts(res.data);
+      } catch (error) {
+        console.error("Related products error", error);
+      }
+    };
+
+    fetchRelatedProducts();
+  }, [product]);
+
+  useEffect(() => {
+  window.scrollTo(0, 0);
+}, [id]);
+
+
+
 
   if (loading) {
     return (
@@ -171,7 +200,7 @@ const ProductDetails = () => {
                         href={product.view360Link}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-blue-600 underline-offset-4 underline"
+                        className="text-blue-600"
                       >
                         View Product
                       </a>
@@ -183,6 +212,33 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
+      {relatedProducts.length > 0 && (
+        <div className="mt-20 app-container">
+          <h3 className="text-3xl text-center font-semibold mb-8 uppercase!">Related Products</h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {relatedProducts.map((item) => (
+              <div
+                key={item._id}
+                onClick={() => navigate(`/product/${item._id}`)}
+                className="cursor-pointer group"
+              >
+                <div className="overflow-hidden">
+                  <img
+                    src={item.featureImage}
+                    alt={item.title}
+                    className="w-full h-[350px] object-cover transition-transform duration-300 group-hover:scale-105 rounded-md"
+                  />
+                </div>
+
+                <h4 className="mt-4 text-lg font-medium group-hover:underline">
+                  {item.title}
+                </h4>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

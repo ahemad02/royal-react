@@ -156,7 +156,7 @@ useEffect(() => {
         ]}
       />
 
-      <div className="bg-[#1e1e1e] text-white py-14 px-6">
+      <div className="bg-[#1e1e1e] text-white py-14">
         <h2 className="text-center text-3xl font-bold mb-8 tracking-wide">
           OUR PRODUCTS
         </h2>
