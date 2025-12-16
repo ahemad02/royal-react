@@ -19,6 +19,10 @@ app.use(helmet());
 app.use(express.json());
 app.use(cors());
 
+app.get("/", (req, res) => {
+  res.send("Hello Worldd!");
+});
+
 // rate limiter
 app.use(
   "/api/contact",
