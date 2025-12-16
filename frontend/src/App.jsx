@@ -20,7 +20,7 @@ import Surfaces from "./admin/pages/Surfaces";
 import Categories from "./admin/pages/Categories";
 import Login from "./admin/pages/Login";
 import { useLocation } from "react-router-dom";
-import Catalogue from "./pages/catalogue";
+import Catalogue from "./pages/Catalogue";
 import CatalogueList from "./admin/pages/CatalogueList";
 import CatalogueForm from "./admin/pages/CatalogueForm";
 import CatalogueSizes from "./admin/pages/CatalogueSizes";
