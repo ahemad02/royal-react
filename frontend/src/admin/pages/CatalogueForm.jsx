@@ -20,19 +20,33 @@ export default function CatalogueForm() {
   const [surfaces, setSurfaces] = useState([]);
 
 useEffect(() => {
-  axios.get("/catalogue-sizes").then(res => setSizes(res.data));
-  axios.get("/catalogue-surfaces").then(res => setSurfaces(res.data));
+  const fetchMeta = async () => {
+    try {
+      const [sizesRes, surfacesRes] = await Promise.all([
+        axios.get("/catalogue/catalogue-sizes"),
+        axios.get("/catalogue/catalogue-surfaces"),
+      ]);
+
+      setSizes(sizesRes.data);
+      setSurfaces(surfacesRes.data);
+    } catch (err) {
+      console.error("Failed to load catalogue meta", err);
+    }
+  };
+
+  fetchMeta();
 
   if (id) {
     axios.get(`/catalogues/${id}`).then((res) => {
       setForm({
         name: res.data.name,
-        size: res.data.size?._id,
-        surface: res.data.surface?._id,
+        size: res.data.size?._id || "",
+        surface: res.data.surface?._id || "",
       });
     });
   }
 }, [id]);
+
 
 
   const submitHandler = async (e) => {
@@ -47,9 +61,9 @@ useEffect(() => {
     if (pdfFile) fd.append("pdfFile", pdfFile);
 
     if (id) {
-      await axios.put(`/catalogues/${id}`, fd);
+      await axios.put(`/catalogue/${id}`, fd);
     } else {
-      await axios.post("/catalogues", fd);
+      await axios.post("/catalogue", fd);
     }
 
     navigate("/admin/catalogues");

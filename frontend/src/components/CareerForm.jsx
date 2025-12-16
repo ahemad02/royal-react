@@ -5,6 +5,11 @@ const CareerForm = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const BACKEND_URL = import.meta.env.VITE_API_URL;
+
+  console.log(BACKEND_URL);
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -18,7 +23,7 @@ const CareerForm = () => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8800/api/career", {
+      const response = await fetch(`${BACKEND_URL}/career`, {
         method: "POST",
         body: formData,
       });

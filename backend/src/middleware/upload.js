@@ -1,17 +1,13 @@
-// middleware/upload.js
 import multer from "multer";
 
-const storage = multer.memoryStorage(); // buffer instead of saving file
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
-  limits: { fileSize: 20 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 20 * 1024 * 1024 },
 });
 
-export const uploadCatalogueFiles = multer({
-  storage,
-  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
-}).fields([
+export const uploadCatalogueFiles = upload.fields([
   { name: "featureImage", maxCount: 1 },
   { name: "pdfFile", maxCount: 1 },
 ]);

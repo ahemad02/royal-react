@@ -168,3 +168,34 @@ export const createCatalogueSurface = async (req, res) => {
   const surface = await CatalogueSurface.create({ name: req.body.name });
   res.status(201).json(surface);
 };
+
+// SIZES
+export const updateCatalogueSize = async (req, res) => {
+  const size = await CatalogueSize.findByIdAndUpdate(
+    req.params.id,
+    { name: req.body.name },
+    { new: true }
+  );
+  res.json(size);
+};
+
+export const deleteCatalogueSize = async (req, res) => {
+  await CatalogueSize.findByIdAndDelete(req.params.id);
+  res.json({ message: "Size deleted" });
+};
+
+// SURFACES
+export const updateCatalogueSurface = async (req, res) => {
+  const surface = await CatalogueSurface.findByIdAndUpdate(
+    req.params.id,
+    { name: req.body.name },
+    { new: true }
+  );
+  res.json(surface);
+};
+
+export const deleteCatalogueSurface = async (req, res) => {
+  await CatalogueSurface.findByIdAndDelete(req.params.id);
+  res.json({ message: "Surface deleted" });
+};
+

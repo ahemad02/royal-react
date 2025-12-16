@@ -6,7 +6,7 @@ export default function CatalogueList() {
   const [catalogues, setCatalogues] = useState([]);
 
   const fetchCatalogues = async () => {
-    const res = await axios.get("/catalogues");
+    const res = await axios.get("/catalogue");
     setCatalogues(res.data);
   };
 
@@ -23,10 +23,10 @@ export default function CatalogueList() {
   return (
     <div>
       <div className="flex justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Catalogues</h1>
+        <h1 className="text-2xl font-semibold text-black!">Catalogues</h1>
         <Link
           to="/admin/catalogues/new"
-          className="bg-black text-white px-4 py-2 rounded"
+          className="bg-black text-white px-4 py-2 rounded max-h-10 flex items-center"
         >
           + Add Catalogue
         </Link>
