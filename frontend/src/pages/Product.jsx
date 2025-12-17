@@ -280,25 +280,56 @@ export default Product;
 
 // REUSABLE DROPDOWN
 const FilterDropdown = ({ label, value, options, onSelect }) => {
-  const isActive = !!value; // Active if a value is selected
+  const [open, setOpen] = useState(false);
+  const isActive = !!value;
+
   return (
-    <div className="relative group">
+    <div
+      className="relative group"
+      onMouseLeave={() => setOpen(false)} // close when mouse leaves (desktop)
+    >
       <button
-        className={`px-8 py-3 rounded-lg border ${
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={`px-8 py-3 rounded-lg border flex items-center gap-2 ${
           isActive ? "bg-white text-black" : "bg-transparent text-white"
         }`}
       >
-        {value || label} ▼
+        {value || label}
+        <span
+          className={`transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        >
+          ▼
+        </span>
       </button>
 
-      <div className="absolute left-0 mt-0.4 bg-[#1e1e1e] rounded shadow-lg w-44 opacity-0 invisible group-hover:opacity-100 group-hover:visible z-20">
+      {/* Dropdown */}
+      <div
+        className={`
+          absolute left-0 mt-1 w-44 z-20 rounded shadow-lg bg-[#1e1e1e]
+          transition-all duration-200
+          ${
+            open
+              ? "opacity-100 visible scale-100"
+              : "opacity-0 invisible scale-95"
+          }
+          group-hover:opacity-100
+          group-hover:visible
+          group-hover:scale-100
+        `}
+      >
         {options.map((opt) => (
           <div
             key={opt.id}
             className={`px-5 py-3 cursor-pointer hover:bg-[#3a3a3a] ${
               value === opt.name ? "bg-white text-black" : ""
             }`}
-            onClick={() => onSelect(opt)}
+            onClick={() => {
+              onSelect(opt);
+              setOpen(false); // close after selection
+            }}
           >
             {opt.name}
           </div>
